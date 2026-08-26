@@ -1,6 +1,14 @@
-name: code-standardize
+# TODO: remover "[test] " do name e o trigger workflow_dispatch antes do merge na main
+name: "[test] code-standardize"
 
 on:
+  workflow_dispatch:
+    inputs:
+      path:
+        description: Caminho a padronizar
+        required: false
+        default: '.'
+        type: string
   workflow_call:
     inputs:
       path:

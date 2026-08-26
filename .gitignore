@@ -1,3 +1,10 @@
+# Arquivos MAC
+.DS_Store
+
+# act (teste local de Actions)
+.actrc
+.secrets
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

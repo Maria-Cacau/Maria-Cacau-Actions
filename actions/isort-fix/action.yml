@@ -15,11 +15,15 @@ outputs:
   changed:
     description: "'true' se o isort alterou algum arquivo"
     value: ${{ steps.run.outputs.changed }}
+  count:
+    description: "Quantidade de arquivos alterados"
+    value: ${{ steps.run.outputs.count }}
 
 runs:
   using: composite
   steps:
     - uses: actions/setup-python@v5
+    - uses: actions/setup-python@v7
       with:
         python-version: ${{ inputs.python-version }}
 

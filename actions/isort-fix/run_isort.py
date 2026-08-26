@@ -13,6 +13,14 @@ def changed_files() -> list[str]:
     return [line for line in diff.stdout.splitlines() if line]
 
 
+def summary_row(changed: bool, files: list[str]) -> str:
+    """Linha de tabela pro summary combinado (isort + graphify), montado num step
+    agregador do code-standardize.yml. Não escreve em lugar nenhum — só formata."""
+    if not changed:
+        return "| isort | Nenhum import fora de ordem | - |"
+    return f"| isort | {len(files)} arquivo(s) alterado(s) | {', '.join(f'`{f}`' for f in files)} |"
+
+
 def main() -> None:
     target = sys.argv[1] if len(sys.argv) > 1 else "."
 
@@ -34,17 +42,7 @@ def main() -> None:
     if github_output:
         with open(github_output, "a", encoding="utf-8") as f:
             f.write(f"changed={'true' if changed else 'false'}\n")
-
-    summary_path = os.environ.get("GITHUB_STEP_SUMMARY")
-    if summary_path:
-        with open(summary_path, "a", encoding="utf-8") as f:
-            f.write("## isort\n\n")
-            if changed:
-                f.write(f"Realizado — **{n}** arquivo(s) alterado(s)\n\n")
-                for file in files:
-                    f.write(f"- `{file}`\n")
-            else:
-                f.write("Nenhum import fora de ordem.\n")
+            f.write(f"count={n}\n")
 
 
 if __name__ == "__main__":

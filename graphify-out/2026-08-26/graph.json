@@ -40,18 +40,6 @@
       "source_location": "L45"
     },
     {
-      "id": "actions_graphify_update_update_graph_summary_row",
-      "label": "summary_row()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "update_graph.py",
-      "file_type": "code",
-      "norm_label": "summary_row()",
-      "source_file": "actions/graphify-update/update_graph.py",
-      "source_location": "L36"
-    },
-    {
       "id": "actions_isort_fix_run_isort_changed_files",
       "label": "changed_files()",
       "_callable": true,
@@ -86,6 +74,18 @@
       "norm_label": "summary_row()",
       "source_file": "actions/isort-fix/run_isort.py",
       "source_location": "L17"
+    },
+    {
+      "id": "actions_graphify_update_update_graph_summary_row",
+      "label": "summary_row()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "summary_row",
+      "file_type": "code",
+      "norm_label": "summary_row()",
+      "source_file": "actions/graphify-update/update_graph.py",
+      "source_location": "L36"
     },
     {
       "id": "readme",
@@ -217,17 +217,6 @@
       "source_location": "L20"
     },
     {
-      "id": "actions_graphify_update_update_graph_rationale_37",
-      "label": "Linha de tabela pro summary combinado (isort + graphify), montado num step\u2026",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "update_graph.py",
-      "file_type": "rationale",
-      "norm_label": "linha de tabela pro summary combinado (isort + graphify), montado num step...",
-      "source_file": "actions/graphify-update/update_graph.py",
-      "source_location": "L37"
-    },
-    {
       "id": "actions_isort_fix_run_isort",
       "label": "run_isort.py",
       "_origin": "ast",
@@ -250,63 +239,44 @@
       "source_location": "L18"
     },
     {
-      "id": "scripts_commit",
-      "label": "commit.sh",
+      "id": "actions_graphify_update_update_graph_rationale_37",
+      "label": "Linha de tabela pro summary combinado (isort + graphify), montado num step\u2026",
       "_origin": "ast",
       "community": 3,
-      "community_name": "commit.sh",
+      "community_name": "summary_row",
+      "file_type": "rationale",
+      "norm_label": "linha de tabela pro summary combinado (isort + graphify), montado num step...",
+      "source_file": "actions/graphify-update/update_graph.py",
+      "source_location": "L37"
+    },
+    {
+      "id": "scripts_finish",
+      "label": "finish.sh",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "finish.sh",
       "file_type": "code",
       "metadata": {
         "language": "bash",
         "kind": "file"
       },
-      "norm_label": "commit.sh",
-      "source_file": "scripts/commit.sh",
+      "norm_label": "finish.sh",
+      "source_file": "scripts/finish.sh",
       "source_location": "L1"
     },
     {
-      "id": "scripts_commit_sh__entry",
-      "label": "commit.sh script",
+      "id": "scripts_finish_sh__entry",
+      "label": "finish.sh script",
       "_origin": "ast",
-      "community": 3,
-      "community_name": "commit.sh",
+      "community": 4,
+      "community_name": "finish.sh",
       "file_type": "code",
       "metadata": {
         "language": "bash",
         "kind": "bash_entrypoint"
       },
-      "norm_label": "commit.sh script",
-      "source_file": "scripts/commit.sh",
-      "source_location": "L1"
-    },
-    {
-      "id": "scripts_notice",
-      "label": "notice.sh",
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "notice.sh",
-      "file_type": "code",
-      "metadata": {
-        "language": "bash",
-        "kind": "file"
-      },
-      "norm_label": "notice.sh",
-      "source_file": "scripts/notice.sh",
-      "source_location": "L1"
-    },
-    {
-      "id": "scripts_notice_sh__entry",
-      "label": "notice.sh script",
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "notice.sh",
-      "file_type": "code",
-      "metadata": {
-        "language": "bash",
-        "kind": "bash_entrypoint"
-      },
-      "norm_label": "notice.sh script",
-      "source_file": "scripts/notice.sh",
+      "norm_label": "finish.sh script",
+      "source_file": "scripts/finish.sh",
       "source_location": "L1"
     }
   ],
@@ -526,24 +496,13 @@
       "weight": 1.0
     },
     {
-      "source": "scripts_commit",
-      "target": "scripts_commit_sh__entry",
+      "source": "scripts_finish",
+      "target": "scripts_finish_sh__entry",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "scripts/commit.sh",
-      "source_location": "L1",
-      "weight": 1.0
-    },
-    {
-      "source": "scripts_notice",
-      "target": "scripts_notice_sh__entry",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "scripts/notice.sh",
+      "source_file": "scripts/finish.sh",
       "source_location": "L1",
       "weight": 1.0
     },
@@ -582,5 +541,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "2a16cd9c9d92c063e041bcbd109db23fbb7a0e76"
+  "built_at_commit": "32e364e79ed01a40cdbbdd3e58e0efa7eb18c8bf"
 }

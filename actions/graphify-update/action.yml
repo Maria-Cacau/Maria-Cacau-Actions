@@ -16,7 +16,7 @@ outputs:
     description: "Quantidade de arquivos alterados"
     value: ${{ steps.run.outputs.count }}
   forced:
-    description: "'true' se precisou do fallback force (ver graphify-force.md)"
+    description: "'true' se precisou do fallback force"
     value: ${{ steps.run.outputs.forced }}
 
 runs:

@@ -28,6 +28,7 @@ Composite Actions e Reusable Workflows consumidos pelos demais repositórios
 |---|---|
 | `.github/workflows/` | Reusable Workflows (`on: workflow_call`) — orquestram as Composite Actions |
 | `actions/` | Composite Actions, uma pasta por action — cada uma com `action.yml` + script próprio |
+| `scripts/` | Scripts usados direto por um Reusable Workflow (não amarrados a uma Composite Action específica) |
 
 ## Padrões
 

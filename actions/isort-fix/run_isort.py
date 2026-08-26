@@ -4,13 +4,14 @@ import sys
 
 
 def changed_files() -> list[str]:
-    diff = subprocess.run(
-        ["git", "diff", "--name-only"],
+    # --porcelain pega modificados E não-rastreados, ao contrário de `git diff` sozinho.
+    status = subprocess.run(
+        ["git", "status", "--porcelain"],
         capture_output=True,
         text=True,
         check=True,
     )
-    return [line for line in diff.stdout.splitlines() if line]
+    return [line[3:] for line in status.stdout.splitlines() if line]
 
 
 def summary_row(changed: bool, files: list[str]) -> str:

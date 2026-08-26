@@ -1,15 +1,12 @@
 name: isort-fix
-description: Ajusta a ordenação dos imports Python com isort
+description: Ajusta a ordenação dos imports Python com isort. Assume que o Python já foi
+  configurado antes (via actions/setup-python) por quem chama esta action.
 
 inputs:
   path:
     description: Caminho a rodar o isort
     required: false
     default: '.'
-  python-version:
-    description: Versão do Python
-    required: false
-    default: '3.13'
 
 outputs:
   changed:
@@ -22,10 +19,6 @@ outputs:
 runs:
   using: composite
   steps:
-    - uses: actions/setup-python@v7
-      with:
-        python-version: ${{ inputs.python-version }}
-
     - name: Instalar isort
       run: pip install isort
       shell: bash

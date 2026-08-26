@@ -37,7 +37,7 @@ jobs:
         with:
           path: ${{ inputs.path }}
 
-      - name: graph
+      - name: graphify
         uses: ./actions/graphify-update
         id: graphify
         with:

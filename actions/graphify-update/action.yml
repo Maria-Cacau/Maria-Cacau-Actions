@@ -1,0 +1,32 @@
+name: graphify-update
+description: Atualiza o grafo de conhecimento do projeto com graphify. Assume que o Python já
+  foi configurado antes (via actions/setup-python) por quem chama esta action.
+
+inputs:
+  path:
+    description: Caminho a atualizar o grafo
+    required: false
+    default: '.'
+
+outputs:
+  changed:
+    description: "'true' se o graphify alterou algum arquivo"
+    value: ${{ steps.run.outputs.changed }}
+  count:
+    description: "Quantidade de arquivos alterados"
+    value: ${{ steps.run.outputs.count }}
+  forced:
+    description: "'true' se precisou do fallback force (ver graphify-force.md)"
+    value: ${{ steps.run.outputs.forced }}
+
+runs:
+  using: composite
+  steps:
+    - name: Instalar graphifyy
+      run: pip install graphifyy
+      shell: bash
+
+    - id: run
+      name: Rodar graphify update
+      run: python ${{ github.action_path }}/update_graph.py "${{ inputs.path }}"
+      shell: bash

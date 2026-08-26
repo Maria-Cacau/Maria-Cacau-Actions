@@ -43,13 +43,15 @@ jobs:
         with:
           path: ${{ inputs.path }}
 
-      # Gera o notice final e comita as mudanças do isort/graph (se houver).
-      # scripts/finish.sh é genérico (notice + commit + push) — reaproveitável por
-      # outros reusable workflows deste repo, não é exclusivo do code-standardize.
-      - name: Finish
+      - name: Notice
         env:
           NOTICE_TITLE: code-standardize
           NOTICE: "isort: ${{ steps.isort.outputs.count }} arquivo(s) | graphify: ${{ steps.graphify.outputs.count }} arquivo(s)"
+        run: bash ${{ github.workspace }}/scripts/notice.sh
+        shell: bash
+
+      - name: Commit
+        env:
           COMMIT_MESSAGE: "chore: isort + graphify [skip ci]"
-        run: bash ${{ github.workspace }}/scripts/finish.sh
+        run: bash ${{ github.workspace }}/scripts/commit.sh
         shell: bash

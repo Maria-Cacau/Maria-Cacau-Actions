@@ -68,7 +68,6 @@ def main() -> None:
         print(f"graphify atualizou {label} em: {target}")
         for f in files:
             print(f"  - {f}")
-        print(f"::notice title=graphify::{label}")
     else:
         print("Grafo já atualizado.")
 

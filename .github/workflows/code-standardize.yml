@@ -43,9 +43,9 @@ jobs:
         with:
           path: ${{ inputs.path }}
 
-      - name: Notice
+      - name: Summary
         env:
-          NOTICE_TITLE: code-standardize
+          NOTICE_TITLE: Summary
           NOTICE: "isort: ${{ steps.isort.outputs.count }} arquivo(s) | graphify: ${{ steps.graphify.outputs.count }} arquivo(s)"
         run: bash ${{ github.workspace }}/scripts/notice.sh
         shell: bash

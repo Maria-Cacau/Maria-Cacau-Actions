@@ -35,7 +35,6 @@ def main() -> None:
         print(f"isort ajustou {n} arquivo(s) em: {target}")
         for f in files:
             print(f"  - {f}")
-        print(f"::notice title=isort::{n} arquivo(s) alterado(s)")
     else:
         print("Nenhum import fora de ordem.")
 

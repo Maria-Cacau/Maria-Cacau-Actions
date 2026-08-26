@@ -1,18 +1,10 @@
-name: "[test] isort-fix"
+name: "[test] code-standardize"
 
 on:
   workflow_dispatch:
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: ./actions/isort-fix
-        id: isort
-        with:
-          path: 'actions/'
-
-      - name: Mostrar output
-        run: echo "changed=${{ steps.isort.outputs.changed }}"
+  call:
+    uses: ./.github/workflows/code-standardize.yml
+    with:
+      path: '.'

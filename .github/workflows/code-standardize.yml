@@ -1,0 +1,23 @@
+name: code-standardize
+
+on:
+  workflow_call:
+    inputs:
+      path:
+        description: Caminho a padronizar
+        required: false
+        default: '.'
+        type: string
+
+jobs:
+  standardize:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./actions/isort-fix
+        id: isort
+        with:
+          path: ${{ inputs.path }}

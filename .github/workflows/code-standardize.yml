@@ -20,6 +20,13 @@ jobs:
 
       - name: Checkout Maria-Cacau-Actions
         uses: actions/checkout@v7
+        with:
+          repository: Maria-Cacau/Maria-Cacau-Actions
+          ref: v1
+          path: .maria-cacau-actions
+
+      - name: Excluir .maria-cacau-actions do git do chamador
+        run: echo ".maria-cacau-actions/" >> .git/info/exclude
         shell: bash
 
       - name: Setup

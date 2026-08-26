@@ -19,7 +19,7 @@ def changed_files() -> list[str]:
 def force_rebuild(path: Path) -> None:
     """Fallback quando `graphify update` recusa sobrescrever o grafo (guard-rail
     interno contra encolhimento silencioso). Não existe flag --force na CLI, só na
-    API Python — ver Maria-Cacau-Study/demandas/ci-cd/decisoes/graphify-force.md."""
+    API Python — por isso o monkeypatch em vez de um argumento de linha de comando."""
     import graphify.export as export
 
     original_to_json = export.to_json

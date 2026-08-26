@@ -1,0 +1,33 @@
+name: isort-fix
+description: Ajusta a ordenação dos imports Python com isort
+
+inputs:
+  path:
+    description: Caminho a rodar o isort
+    required: false
+    default: '.'
+  python-version:
+    description: Versão do Python
+    required: false
+    default: '3.13'
+
+outputs:
+  changed:
+    description: "'true' se o isort alterou algum arquivo"
+    value: ${{ steps.run.outputs.changed }}
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Instalar isort
+      run: pip install isort
+      shell: bash
+
+    - id: run
+      name: Rodar isort
+      run: python ${{ github.action_path }}/run_isort.py "${{ inputs.path }}"
+      shell: bash

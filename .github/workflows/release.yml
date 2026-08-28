@@ -1,4 +1,4 @@
-# TODO: as 3 self-referências pra @feature/release-action abaixo (check-version,
+# TODO: as 3 self-referências pra @1.1-Test abaixo (check-version,
 # distribute, release) voltam pra @v1 antes do merge na main.
 name: release
 
@@ -17,7 +17,7 @@ jobs:
           fetch-depth: 2
 
       - id: check
-        uses: Maria-Cacau/Maria-Cacau-Actions/actions/check-version@feature/release-action
+        uses: Maria-Cacau/Maria-Cacau-Actions/actions/check-version@1.1-Test
 
   distribute:
     needs: check-version
@@ -34,7 +34,7 @@ jobs:
           python-version: '3.13'
 
       - id: dist
-        uses: Maria-Cacau/Maria-Cacau-Actions/actions/distribute@feature/release-action
+        uses: Maria-Cacau/Maria-Cacau-Actions/actions/distribute@1.1-Test
 
       - uses: actions/upload-artifact@v7
         with:
@@ -56,7 +56,7 @@ jobs:
           name: exe
           path: dist
 
-      - uses: Maria-Cacau/Maria-Cacau-Actions/actions/release@feature/release-action
+      - uses: Maria-Cacau/Maria-Cacau-Actions/actions/release@1.1-Test
         with:
           version: ${{ needs.check-version.outputs.version }}
           exe-path: dist/${{ needs.distribute.outputs.app-name }}.exe

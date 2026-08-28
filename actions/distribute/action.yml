@@ -22,5 +22,5 @@ runs:
   steps:
     - id: run
       name: Gerar .exe
-      run: python ${{ github.action_path }}/distribute.py "${{ inputs.path }}"
+      run: python "${{ github.action_path }}"/distribute.py "${{ inputs.path }}"
       shell: bash

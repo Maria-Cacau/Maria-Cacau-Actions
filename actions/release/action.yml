@@ -16,5 +16,5 @@ runs:
   using: composite
   steps:
     - name: Criar/atualizar release
-      run: python ${{ github.action_path }}/release.py "${{ inputs.version }}" "${{ inputs.exe-path }}"
+      run: python "${{ github.action_path }}"/release.py "${{ inputs.version }}" "${{ inputs.exe-path }}"
       shell: bash

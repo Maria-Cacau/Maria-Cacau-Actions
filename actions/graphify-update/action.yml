@@ -28,5 +28,5 @@ runs:
 
     - id: run
       name: Rodar graphify update
-      run: python ${{ github.action_path }}/update_graph.py "${{ inputs.path }}"
+      run: python "${{ github.action_path }}"/update_graph.py "${{ inputs.path }}"
       shell: bash

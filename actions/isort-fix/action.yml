@@ -25,5 +25,5 @@ runs:
 
     - id: run
       name: Rodar isort
-      run: python ${{ github.action_path }}/run_isort.py "${{ inputs.path }}"
+      run: python "${{ github.action_path }}"/run_isort.py "${{ inputs.path }}"
       shell: bash

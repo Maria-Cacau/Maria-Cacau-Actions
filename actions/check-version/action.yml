@@ -17,5 +17,5 @@ runs:
   steps:
     - id: run
       name: Checar versão
-      run: python ${{ github.action_path }}/check_version.py
+      run: python "${{ github.action_path }}"/check_version.py
       shell: bash

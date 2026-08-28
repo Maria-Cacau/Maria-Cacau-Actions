@@ -1,6 +1,8 @@
 name: check-version
-description: Verifica se a versão em pyproject.toml mudou em relação ao commit anterior. Assume
-  checkout com histórico suficiente (fetch-depth >= 2) por quem chama esta action.
+description: >
+  Verifica se a versão em pyproject.toml é maior que a última release já existente no repo
+  (via gh release list) — bloqueia se for igual ou menor. Requer GH_TOKEN no ambiente de quem
+  chama esta action.
 
 outputs:
   changed:

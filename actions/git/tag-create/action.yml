@@ -1,0 +1,21 @@
+name: tag-create
+description: >
+  Cria uma tag apontando pro commit atual (checkout já feito por quem chama). Se a tag já
+  existir, apaga e recria — "move" a tag em vez de falhar. Requer a variável de ambiente
+  GH_TOKEN definida por quem chama esta action.
+
+inputs:
+  tag:
+    description: Nome da tag a criar/mover
+    required: true
+  message:
+    description: Mensagem da tag anotada
+    required: false
+    default: ''
+
+runs:
+  using: composite
+  steps:
+    - name: Criar/mover tag
+      run: python "${{ github.action_path }}"/tag_create.py "${{ inputs.tag }}" "${{ inputs.message }}"
+      shell: bash

@@ -1,0 +1,32 @@
+# TODO: a self-referência pra @1.1-Test abaixo (pr-release) volta pra @v1
+# antes do merge na main.
+name: pr-release
+
+on:
+  workflow_call:
+    inputs:
+      branch:
+        description: Branch de referência pra criar a release
+        required: true
+        type: string
+      bump:
+        description: "Tipo de bump: major, minor ou patch"
+        required: true
+        type: string
+
+jobs:
+  pr-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.branch }}
+
+      - uses: Maria-Cacau/Maria-Cacau-Actions/actions/git/pr-release@1.1-Test
+        with:
+          bump: ${{ inputs.bump }}
+        env:
+          GH_TOKEN: ${{ github.token }}

@@ -1,0 +1,20 @@
+name: commit-bot
+description: >
+  Configura a identidade do bot, comita tudo que estiver alterado (se houver) e dá push na
+  branch atual (com -u, funciona tanto pra branch nova quanto já existente). Sem efeito se não
+  houver nada alterado.
+
+inputs:
+  message:
+    description: Mensagem do commit
+    required: false
+    default: 'chore: automated changes [skip ci]'
+
+runs:
+  using: composite
+  steps:
+    - name: Commit e push
+      run: bash "${{ github.action_path }}"/commit_bot.sh
+      shell: bash
+      env:
+        COMMIT_MESSAGE: ${{ inputs.message }}

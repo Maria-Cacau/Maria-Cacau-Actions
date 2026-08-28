@@ -18,17 +18,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
-      - name: Checkout Maria-Cacau-Actions
-        uses: actions/checkout@v7
-        with:
-          repository: Maria-Cacau/Maria-Cacau-Actions
-          ref: v1
-          path: .maria-cacau-actions
-
-      - name: Excluir .maria-cacau-actions do git do chamador
-        run: echo ".maria-cacau-actions/" >> .git/info/exclude
-        shell: bash
-
       - name: Setup
         uses: actions/setup-python@v7
         with:
@@ -47,14 +36,12 @@ jobs:
           path: ${{ inputs.path }}
 
       - name: Summary
-        env:
-          NOTICE_TITLE: Summary
-          NOTICE: "isort: ${{ steps.isort.outputs.count }} arquivo(s) | graphify: ${{ steps.graphify.outputs.count }} arquivo(s)"
-        run: bash ${{ github.workspace }}/.maria-cacau-actions/scripts/notice.sh
-        shell: bash
+        uses: Maria-Cacau/Maria-Cacau-Actions/actions/git/actions-notice@v1
+        with:
+          title: Summary
+          message: "isort: ${{ steps.isort.outputs.count }} arquivo(s) | graphify: ${{ steps.graphify.outputs.count }} arquivo(s)"
 
       - name: Commit
-        env:
-          COMMIT_MESSAGE: "chore: isort + graphify [skip ci]"
-        run: bash ${{ github.workspace }}/.maria-cacau-actions/scripts/commit.sh
-        shell: bash
+        uses: Maria-Cacau/Maria-Cacau-Actions/actions/git/commit-bot@v1
+        with:
+          message: "chore: isort + graphify [skip ci]"

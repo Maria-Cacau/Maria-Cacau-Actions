@@ -1,6 +1,6 @@
-# TODO: as 5 self-referências pra @1.1-Test abaixo (check-branch, check-version,
-# build, nuitka, release) voltam pra @v1 antes do merge na main.
-name: release
+# TODO: as 7 self-referências pra @1.1-Test abaixo (branch-check, check-version,
+# cache-clear, build, nuitka, release-publish, tag-delete) voltam pra @v1 antes do merge na main.
+name: app-distribution
 
 on:
   workflow_call:
@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@v7
 
       - name: check-branch
-        uses: Maria-Cacau/Maria-Cacau-Actions/actions/check-branch@1.1-Test
+        uses: Maria-Cacau/Maria-Cacau-Actions/actions/git/branch-check@1.1-Test
 
       - id: check
         name: check-version
@@ -49,7 +49,7 @@ jobs:
 
       - name: Limpar cache do Nuitka (se solicitado)
         if: inputs.clear-cache
-        uses: Maria-Cacau/Maria-Cacau-Actions/actions/clear-cache@1.1-Test
+        uses: Maria-Cacau/Maria-Cacau-Actions/actions/git/actions-cache-clear@1.1-Test
         with:
           key: nuitka-${{ runner.os }}-${{ hashFiles('**/pyproject.toml') }}
         env:
@@ -81,7 +81,7 @@ jobs:
           name: exe
           path: ${{ steps.dist.outputs.exe-path }}
 
-  release:
+  release-publish:
     needs: [validation, app-distribution]
     if: needs.validation.outputs.changed == 'true'
     runs-on: ubuntu-latest
@@ -96,9 +96,16 @@ jobs:
           name: exe
           path: dist
 
-      - uses: Maria-Cacau/Maria-Cacau-Actions/actions/release@1.1-Test
+      - uses: Maria-Cacau/Maria-Cacau-Actions/actions/git/release-publish@1.1-Test
         with:
           version: ${{ needs.validation.outputs.version }}
-          exe-path: dist/${{ needs.app-distribution.outputs.app-name }}.exe
+          asset-path: dist/${{ needs.app-distribution.outputs.app-name }}.exe
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: delete-test-tag
+        uses: Maria-Cacau/Maria-Cacau-Actions/actions/git/tag-delete@1.1-Test
+        with:
+          version: ${{ needs.validation.outputs.version }}
         env:
           GH_TOKEN: ${{ github.token }}

@@ -36,7 +36,7 @@ def current_notes(version: str) -> str:
 
 def main() -> None:
     version = sys.argv[1]
-    exe_path = sys.argv[2]
+    asset_path = sys.argv[2] if len(sys.argv) > 2 else ""
     draft = sys.argv[3].lower() == "true" if len(sys.argv) > 3 else False
 
     if release_exists(version):
@@ -53,9 +53,12 @@ def main() -> None:
         else:
             print("Nenhum PR encontrado pra esse commit — notes ficam vazias.")
 
-    print(f"Subindo {exe_path} na release v{version}...")
-    gh("release", "upload", version, exe_path, "--clobber")
-    print(f"Asset enviado para a release v{version}.")
+    if asset_path:
+        print(f"Subindo {asset_path} na release v{version}...")
+        gh("release", "upload", version, asset_path, "--clobber")
+        print(f"Asset enviado para a release v{version}.")
+    else:
+        print("Nenhum asset informado — release sem arquivo anexado.")
 
 
 if __name__ == "__main__":

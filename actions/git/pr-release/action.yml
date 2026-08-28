@@ -1,0 +1,26 @@
+name: pr-release
+description: >
+  Cria a branch release/<versão>, faz o bump de versão no pyproject.toml, commita e abre o PR
+  pra main. Idempotente — reaproveita a branch/PR se já existirem. Requer checkout já feito na
+  branch de referência e GH_TOKEN definido por quem chama esta action.
+
+inputs:
+  bump:
+    description: "Tipo de bump: major, minor ou patch"
+    required: true
+
+outputs:
+  version:
+    description: Nova versão gerada
+    value: ${{ steps.run.outputs.version }}
+  branch:
+    description: Nome da branch de release criada
+    value: ${{ steps.run.outputs.branch }}
+
+runs:
+  using: composite
+  steps:
+    - id: run
+      name: Preparar release
+      run: python "${{ github.action_path }}"/pr_release.py "${{ inputs.bump }}"
+      shell: bash

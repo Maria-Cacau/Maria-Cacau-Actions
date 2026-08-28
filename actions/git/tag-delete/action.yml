@@ -1,0 +1,18 @@
+name: tag-delete
+description: >
+  Remove a tag de teste correspondente a uma versão publicada (ex: versão 1.1.0 publicada
+  -> apaga a tag "1.1-Test", se existir). Convenção usada durante a validação de mudanças no
+  repo antes de promover pra tag real. Silencioso se a tag não existir. Requer a variável de
+  ambiente GH_TOKEN definida por quem chama esta action.
+
+inputs:
+  version:
+    description: "Versão que acabou de ser publicada (ex.: 1.1.0)"
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Remover tag de teste
+      run: python "${{ github.action_path }}"/tag_delete.py "${{ inputs.version }}"
+      shell: bash

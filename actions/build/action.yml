@@ -1,0 +1,31 @@
+name: build
+description: >
+  Roda o script de build específico do repo (build.bat no Windows, build.sh nos demais SOs),
+  procurado na raiz do repo ou em scripts/. Se o script criar um venv próprio, expõe o Python de
+  dentro dele pra próximos steps usarem. Assume que o Python já foi configurado antes (via
+  actions/setup-python) por quem chama esta action.
+
+inputs:
+  path:
+    description: Caminho raiz do repo (onde procurar o script de build)
+    required: false
+    default: '.'
+  args:
+    description: "Argumento repassado pro script de build (ex.: grupo de extras do pyproject.toml)"
+    required: false
+    default: ''
+
+outputs:
+  python:
+    description: >
+      Caminho do interpretador Python a usar nos próximos steps — o do venv criado pelo script
+      de build, se existir, senão o do ambiente atual.
+    value: ${{ steps.run.outputs.python }}
+
+runs:
+  using: composite
+  steps:
+    - id: run
+      name: Rodar script de build
+      run: python "${{ github.action_path }}"/build.py "${{ inputs.path }}" "${{ inputs.args }}"
+      shell: bash

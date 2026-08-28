@@ -24,8 +24,8 @@ def check_required_attrs(module) -> None:
     missing = [attr for attr in REQUIRED_ATTRS if not hasattr(module, attr)]
     if missing:
         print(
-            f"::error title=distribute::atributos faltando em {module.__name__}: "
-            f"{', '.join(missing)}. Todo módulo que usa a action 'distribute' precisa expor: "
+            f"::error title=nuitka::atributos faltando em {module.__name__}: "
+            f"{', '.join(missing)}. Todo módulo que usa a action 'nuitka' precisa expor: "
             f"{', '.join(REQUIRED_ATTRS)}.",
             file=sys.stderr,
         )
@@ -36,21 +36,9 @@ def main() -> None:
     root = Path(sys.argv[1] if len(sys.argv) > 1 else ".").resolve()
     entry = entry_module_name(root / "pyproject.toml")
 
-    # PYTHONUNBUFFERED força pip/nuitka (também processos Python) a mandar o
-    # próprio output linha a linha em vez de bufferizar — sem TTY (caso do
-    # runner), muita ferramenta troca pra buffer cheio e o log fica "parado".
-    env = {**os.environ, "PYTHONUNBUFFERED": "1"}
-
-    print(f"Instalando dependências de build ({root / 'pyproject.toml'})...")
-    subprocess.run(
-        [sys.executable, "-m", "pip", "install", "-e", ".[build]"],
-        cwd=root,
-        env=env,
-        check=True,
-    )
-
-    # pip install roda em subprocess separado — o processo atual não enxerga o
-    # pacote recém-instalado sem isso, mesmo sendo o mesmo interpretador.
+    # Fallback defensivo: se o interpretador em uso não tiver o pacote
+    # instalado via editable install (ex: sem venv, ambiente global), garante
+    # que o módulo em `root` ainda seja importável.
     sys.path.insert(0, str(root))
 
     print(f"Importando módulo de entrada: {entry}")
@@ -61,6 +49,12 @@ def main() -> None:
     win_version = f"{module.__version__}.0"
     output_dir = root / "dist"
 
+    # NUITKA_CACHE_DIR fixo (em vez do default do appdirs) pra dar pra cachear
+    # essa pasta entre runs via actions/cache — sem isso cada run começa com
+    # cache zerado, já que o runner é uma VM nova sempre.
+    cache_dir = root / ".nuitka-cache"
+    env = {**os.environ, "PYTHONUNBUFFERED": "1", "NUITKA_CACHE_DIR": str(cache_dir)}
+
     print(f"Gerando .exe via Nuitka ({app_name} {module.__version__})...")
     cmd = [
         sys.executable,
@@ -69,7 +63,6 @@ def main() -> None:
         "--onefile",
         "--assume-yes-for-downloads",
         "--show-progress",
-        "--show-scons",
         "--enable-plugin=pyqt6",
         "--windows-console-mode=disable",
         f"--windows-icon-from-ico={module.__icon_win__}",

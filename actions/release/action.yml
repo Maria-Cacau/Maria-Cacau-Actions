@@ -1,7 +1,7 @@
 name: release
 description: >
-  Cria/reaproveita a release em draft, preenche a descrição a partir do PR mergeado (se as notes
-  ainda estiverem vazias) e sobe o asset. Requer a variável de ambiente GH_TOKEN definida por quem
+  Cria/reaproveita a release, preenche a descrição a partir do PR mergeado (se as notes ainda
+  estiverem vazias) e sobe o asset. Requer a variável de ambiente GH_TOKEN definida por quem
   chama esta action.
 
 inputs:
@@ -11,10 +11,14 @@ inputs:
   exe-path:
     description: Caminho do .exe a subir como asset
     required: true
+  draft:
+    description: "'true' para criar como draft (ex: beta/pre-release) em vez de publicada direto"
+    required: false
+    default: 'false'
 
 runs:
   using: composite
   steps:
     - name: Criar/atualizar release
-      run: python "${{ github.action_path }}"/release.py "${{ inputs.version }}" "${{ inputs.exe-path }}"
+      run: python "${{ github.action_path }}"/release.py "${{ inputs.version }}" "${{ inputs.exe-path }}" "${{ inputs.draft }}"
       shell: bash

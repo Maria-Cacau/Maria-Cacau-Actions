@@ -12,8 +12,11 @@ def release_exists(version: str) -> bool:
     return gh("release", "view", version, check=False).returncode == 0
 
 
-def create_draft(version: str) -> None:
-    gh("release", "create", version, "--draft", "--title", f"v{version}", "--notes", "")
+def create_release(version: str, *, draft: bool) -> None:
+    args = ["release", "create", version, "--title", f"v{version}", "--notes", ""]
+    if draft:
+        args.append("--draft")
+    gh(*args)
 
 
 def pr_body_for_current_commit() -> str | None:
@@ -34,12 +37,13 @@ def current_notes(version: str) -> str:
 def main() -> None:
     version = sys.argv[1]
     exe_path = sys.argv[2]
+    draft = sys.argv[3].lower() == "true" if len(sys.argv) > 3 else False
 
     if release_exists(version):
         print(f"Release v{version} já existe, reaproveitando...")
     else:
-        print(f"Release v{version} não encontrada. Criando em draft...")
-        create_draft(version)
+        print(f"Release v{version} não encontrada. Criando{' (draft)' if draft else ''}...")
+        create_release(version, draft=draft)
 
     if not current_notes(version).strip():
         body = pr_body_for_current_commit()

@@ -142,8 +142,16 @@ de produção — para esses, a validação acontece via
     <td>Configura a identidade do bot, comita o que estiver alterado e dá push.</td>
   </tr>
   <tr>
-    <td><a href="actions/git/pr-release/action.yml">git/pr-release</a></td>
-    <td>Cria a branch release/&lt;versão&gt;, bump de versão, commit e PR pra main.</td>
+    <td><a href="actions/git/branch-release/action.yml">git/branch-release</a></td>
+    <td>Calcula a nova versão, cria a branch release/&lt;versão&gt; e bumpa o pyproject.toml.</td>
+  </tr>
+  <tr>
+    <td><a href="actions/git/badge-update/action.yml">git/badge-update</a></td>
+    <td>Atualiza o badge de versão e o link de release no README.md do repo.</td>
+  </tr>
+  <tr>
+    <td><a href="actions/git/pr-ensure/action.yml">git/pr-ensure</a></td>
+    <td>Cria (ou reaproveita/reabre) o PR de uma branch pra uma branch de destino.</td>
   </tr>
   <tr>
     <td><a href="actions/git/release-publish/action.yml">git/release-publish</a></td>

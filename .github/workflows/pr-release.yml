@@ -1,5 +1,5 @@
-# TODO: a self-referência pra @1.1-Test abaixo (pr-release) volta pra @v1
-# antes do merge na main.
+# TODO: as 4 self-referências pra @1.1-Test abaixo (branch-release, badge-update,
+# commit-bot, pr-ensure) voltam pra @v1 antes do merge na main.
 name: pr-release
 
 on:
@@ -25,8 +25,28 @@ jobs:
         with:
           ref: ${{ inputs.branch }}
 
-      - uses: Maria-Cacau/Maria-Cacau-Actions/actions/git/pr-release@1.1-Test
+      - id: branch
+        name: branch-release
+        uses: Maria-Cacau/Maria-Cacau-Actions/actions/git/branch-release@1.1-Test
         with:
           bump: ${{ inputs.bump }}
+
+      - name: badge-update
+        if: steps.branch.outputs.created == 'true'
+        uses: Maria-Cacau/Maria-Cacau-Actions/actions/git/badge-update@1.1-Test
+        with:
+          version: ${{ steps.branch.outputs.version }}
+
+      - name: commit-bot
+        if: steps.branch.outputs.created == 'true'
+        uses: Maria-Cacau/Maria-Cacau-Actions/actions/git/commit-bot@1.1-Test
+        with:
+          message: "chore: bump version to ${{ steps.branch.outputs.version }}"
+
+      - name: pr-ensure
+        uses: Maria-Cacau/Maria-Cacau-Actions/actions/git/pr-ensure@1.1-Test
+        with:
+          branch: ${{ steps.branch.outputs.branch }}
+          title: "Release ${{ steps.branch.outputs.version }}"
         env:
           GH_TOKEN: ${{ github.token }}

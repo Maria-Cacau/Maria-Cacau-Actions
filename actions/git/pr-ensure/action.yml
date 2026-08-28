@@ -1,0 +1,23 @@
+name: pr-ensure
+description: >
+  Cria o PR de uma branch pra uma branch de destino, ou reaproveita/reabre um existente.
+  Idempotente. Requer a variável de ambiente GH_TOKEN definida por quem chama esta action.
+
+inputs:
+  branch:
+    description: Branch de origem (head do PR)
+    required: true
+  target:
+    description: Branch de destino (base do PR)
+    required: false
+    default: 'main'
+  title:
+    description: Título do PR (usado só na criação)
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Garantir PR
+      run: python "${{ github.action_path }}"/pr_ensure.py "${{ inputs.target }}" "${{ inputs.branch }}" "${{ inputs.title }}"
+      shell: bash

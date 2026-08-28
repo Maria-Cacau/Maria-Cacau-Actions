@@ -1,0 +1,16 @@
+name: badge-update
+description: >
+  Atualiza o badge de versão e o link de release no README.md do repo (shields.io e o link
+  releases/tag). Silencioso se não encontrar o padrão esperado.
+
+inputs:
+  version:
+    description: "Nova versão a refletir no README (ex.: 5.2.1)"
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Atualizar badge de versão
+      run: python "${{ github.action_path }}"/badge_update.py "${{ inputs.version }}"
+      shell: bash

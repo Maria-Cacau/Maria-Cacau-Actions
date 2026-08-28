@@ -36,12 +36,18 @@ def main() -> None:
     root = Path(sys.argv[1] if len(sys.argv) > 1 else ".").resolve()
     entry = entry_module_name(root / "pyproject.toml")
 
+    print(f"Instalando dependências de build ({root / 'pyproject.toml'})...")
     subprocess.run(
-        [sys.executable, "-m", "pip", "install", "-e", ".[build]", "--quiet"],
+        [sys.executable, "-m", "pip", "install", "-e", ".[build]"],
         cwd=root,
         check=True,
     )
 
+    # pip install roda em subprocess separado — o processo atual não enxerga o
+    # pacote recém-instalado sem isso, mesmo sendo o mesmo interpretador.
+    sys.path.insert(0, str(root))
+
+    print(f"Importando módulo de entrada: {entry}")
     module = importlib.import_module(entry)
     check_required_attrs(module)
 
@@ -49,6 +55,7 @@ def main() -> None:
     win_version = f"{module.__version__}.0"
     output_dir = root / "dist"
 
+    print(f"Gerando .exe via Nuitka ({app_name} {module.__version__})...")
     cmd = [
         sys.executable,
         "-m",

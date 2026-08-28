@@ -36,10 +36,16 @@ def main() -> None:
     root = Path(sys.argv[1] if len(sys.argv) > 1 else ".").resolve()
     entry = entry_module_name(root / "pyproject.toml")
 
+    # PYTHONUNBUFFERED força pip/nuitka (também processos Python) a mandar o
+    # próprio output linha a linha em vez de bufferizar — sem TTY (caso do
+    # runner), muita ferramenta troca pra buffer cheio e o log fica "parado".
+    env = {**os.environ, "PYTHONUNBUFFERED": "1"}
+
     print(f"Instalando dependências de build ({root / 'pyproject.toml'})...")
     subprocess.run(
         [sys.executable, "-m", "pip", "install", "-e", ".[build]"],
         cwd=root,
+        env=env,
         check=True,
     )
 
@@ -61,6 +67,7 @@ def main() -> None:
         "-m",
         "nuitka",
         "--onefile",
+        "--assume-yes-for-downloads",
         "--enable-plugin=pyqt6",
         "--windows-console-mode=disable",
         f"--windows-icon-from-ico={module.__icon_win__}",
@@ -76,7 +83,7 @@ def main() -> None:
         f"--output-dir={output_dir}",
         entry,
     ]
-    subprocess.run(cmd, cwd=root, check=True)
+    subprocess.run(cmd, cwd=root, env=env, check=True)
 
     exe_path = output_dir / f"{app_name}.exe"
     print(f"Gerado em: {exe_path}")

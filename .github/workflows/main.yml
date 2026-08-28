@@ -1,0 +1,14 @@
+name: main
+
+on:
+  push:
+    branches: [main]
+    paths: ['pyproject.toml']
+
+permissions:
+  contents: write
+  pull-requests: read
+
+jobs:
+  publish-release:
+    uses: ./.github/workflows/publish-release.yml

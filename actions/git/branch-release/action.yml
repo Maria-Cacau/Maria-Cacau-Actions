@@ -1,0 +1,29 @@
+name: branch-release
+description: >
+  Calcula a nova versão (bump), cria a branch release/&lt;versão&gt; e bumpa o pyproject.toml.
+  Idempotente — reaproveita a branch se já existir remotamente (sem bumpar de novo). Não comita
+  nem publica nada, só prepara o checkout local. Assume checkout já feito na branch de referência.
+
+inputs:
+  bump:
+    description: "Tipo de bump: major, minor ou patch"
+    required: true
+
+outputs:
+  version:
+    description: Nova versão calculada
+    value: ${{ steps.run.outputs.version }}
+  branch:
+    description: Nome da branch de release
+    value: ${{ steps.run.outputs.branch }}
+  created:
+    description: "'true' se a branch foi criada agora (bump novo); 'false' se reaproveitou uma existente"
+    value: ${{ steps.run.outputs.created }}
+
+runs:
+  using: composite
+  steps:
+    - id: run
+      name: Criar branch e bumpar versão
+      run: python "${{ github.action_path }}"/branch_release.py "${{ inputs.bump }}"
+      shell: bash

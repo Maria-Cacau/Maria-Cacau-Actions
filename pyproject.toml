@@ -1,0 +1,5 @@
+[project]
+name = "maria-cacau-actions"
+version = "2.0.0"
+description = "Composite Actions e Reusable Workflows centralizados da organização Maria Cacau"
+authors = [{name = "Gui Reis", email = "gui.sreis25@gmail.com"}]

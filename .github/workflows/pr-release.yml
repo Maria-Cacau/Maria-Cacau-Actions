@@ -1,0 +1,50 @@
+name: pr-release
+
+on:
+  workflow_call:
+    inputs:
+      branch:
+        description: Branch de referência pra criar a release
+        required: true
+        type: string
+      bump:
+        description: "Tipo de bump: major, minor ou patch"
+        required: true
+        type: string
+
+jobs:
+  pr-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.branch }}
+
+      - id: branch
+        name: branch-release
+        uses: Maria-Cacau/Maria-Cacau-Actions/actions/git/branch-release@v2
+        with:
+          bump: ${{ inputs.bump }}
+
+      - name: badge-update
+        if: steps.branch.outputs.created == 'true'
+        uses: Maria-Cacau/Maria-Cacau-Actions/actions/git/badge-update@v2
+        with:
+          version: ${{ steps.branch.outputs.version }}
+
+      - name: commit-bot
+        if: steps.branch.outputs.created == 'true'
+        uses: Maria-Cacau/Maria-Cacau-Actions/actions/git/commit-bot@v2
+        with:
+          message: "chore: bump version to ${{ steps.branch.outputs.version }}"
+
+      - name: pr-ensure
+        uses: Maria-Cacau/Maria-Cacau-Actions/actions/git/pr-ensure@v2
+        with:
+          branch: ${{ steps.branch.outputs.branch }}
+          title: "Release ${{ steps.branch.outputs.version }}"
+        env:
+          GH_TOKEN: ${{ github.token }}

@@ -1,0 +1,47 @@
+name: publish-release
+
+on:
+  workflow_call: {}
+
+jobs:
+  validation:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      changed: ${{ steps.check.outputs.changed }}
+      version: ${{ steps.check.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: check-branch
+        uses: Maria-Cacau/Maria-Cacau-Actions/actions/git/branch-check@v2
+
+      - id: check
+        name: check-version
+        uses: Maria-Cacau/Maria-Cacau-Actions/actions/check-version@v2
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+  release-publish:
+    needs: validation
+    if: needs.validation.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: Maria-Cacau/Maria-Cacau-Actions/actions/git/release-publish@v2
+        with:
+          version: ${{ needs.validation.outputs.version }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: delete-test-tag
+        uses: Maria-Cacau/Maria-Cacau-Actions/actions/git/tag-delete@v2
+        with:
+          version: ${{ needs.validation.outputs.version }}
+        env:
+          GH_TOKEN: ${{ github.token }}

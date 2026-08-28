@@ -1,0 +1,109 @@
+name: app-distribution
+
+on:
+  workflow_call:
+    inputs:
+      clear-cache:
+        description: "'true' pra limpar o cache do Nuitka antes de rodar (rebuild limpo)"
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  validation:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      changed: ${{ steps.check.outputs.changed }}
+      version: ${{ steps.check.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: check-branch
+        uses: Maria-Cacau/Maria-Cacau-Actions/actions/git/branch-check@v2
+
+      - id: check
+        name: check-version
+        uses: Maria-Cacau/Maria-Cacau-Actions/actions/check-version@v2
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+  app-distribution:
+    needs: validation
+    if: needs.validation.outputs.changed == 'true'
+    runs-on: windows-latest
+    permissions:
+      actions: write
+    outputs:
+      exe-path: ${{ steps.dist.outputs.exe-path }}
+      app-name: ${{ steps.dist.outputs.app-name }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+
+      - name: Limpar cache do Nuitka (se solicitado)
+        if: inputs.clear-cache
+        uses: Maria-Cacau/Maria-Cacau-Actions/actions/git/actions-cache-clear@v2
+        with:
+          key: nuitka-${{ runner.os }}-${{ hashFiles('**/pyproject.toml') }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      # Cache do objeto compilado (clcache/Nuitka) entre runs — sem isso toda
+      # run recompila do zero, já que o runner é uma VM nova sempre.
+      - uses: actions/cache@v6
+        with:
+          path: .nuitka-cache
+          key: nuitka-${{ runner.os }}-${{ hashFiles('**/pyproject.toml') }}
+          restore-keys: |
+            nuitka-${{ runner.os }}-
+
+      - id: build
+        name: build
+        uses: Maria-Cacau/Maria-Cacau-Actions/actions/build@v2
+        with:
+          args: build
+
+      - id: dist
+        name: nuitka
+        uses: Maria-Cacau/Maria-Cacau-Actions/actions/nuitka@v2
+        with:
+          python: ${{ steps.build.outputs.python }}
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: exe
+          path: ${{ steps.dist.outputs.exe-path }}
+
+  release-publish:
+    needs: [validation, app-distribution]
+    if: needs.validation.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: exe
+          path: dist
+
+      - uses: Maria-Cacau/Maria-Cacau-Actions/actions/git/release-publish@v2
+        with:
+          version: ${{ needs.validation.outputs.version }}
+          asset-path: dist/${{ needs.app-distribution.outputs.app-name }}.exe
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: delete-test-tag
+        uses: Maria-Cacau/Maria-Cacau-Actions/actions/git/tag-delete@v2
+        with:
+          version: ${{ needs.validation.outputs.version }}
+        env:
+          GH_TOKEN: ${{ github.token }}

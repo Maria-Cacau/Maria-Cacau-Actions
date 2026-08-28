@@ -1,0 +1,32 @@
+name: nuitka
+description: >
+  Gera o .exe (Windows, via Nuitka) a partir do módulo de entrada do repo, descoberto
+  automaticamente pelo pyproject.toml. Assume que as dependências já foram instaladas antes
+  (via a action "build") e que roda num runner Windows.
+
+inputs:
+  path:
+    description: Caminho raiz do repo (onde fica o pyproject.toml)
+    required: false
+    default: '.'
+  python:
+    description: Caminho do interpretador Python a usar (output "python" da action "build")
+    required: false
+    default: 'python'
+
+outputs:
+  app-name:
+    description: Nome do app (de __app_name__ no módulo de entrada)
+    value: ${{ steps.run.outputs.app-name }}
+  exe-path:
+    description: Caminho do .exe gerado
+    value: ${{ steps.run.outputs.exe-path }}
+
+runs:
+  using: composite
+  steps:
+    - id: run
+      name: Gerar .exe
+      run: |
+        "${{ inputs.python }}" "${{ github.action_path }}"/nuitka.py "${{ inputs.path }}"
+      shell: bash

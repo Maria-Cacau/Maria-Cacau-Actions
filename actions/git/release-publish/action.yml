@@ -1,0 +1,25 @@
+name: release-publish
+description: >
+  Cria/reaproveita a release, preenche a descrição a partir do PR mergeado (se as notes ainda
+  estiverem vazias) e sobe o asset, se algum for informado. Requer a variável de ambiente
+  GH_TOKEN definida por quem chama esta action.
+
+inputs:
+  version:
+    description: Versão da release (sem 'v')
+    required: true
+  asset-path:
+    description: Caminho de um arquivo a subir como asset (opcional — nem toda release tem um)
+    required: false
+    default: ''
+  draft:
+    description: "'true' para criar como draft (ex: beta/pre-release) em vez de publicada direto"
+    required: false
+    default: 'false'
+
+runs:
+  using: composite
+  steps:
+    - name: Criar/atualizar release
+      run: python "${{ github.action_path }}"/release.py "${{ inputs.version }}" "${{ inputs.asset-path }}" "${{ inputs.draft }}"
+      shell: bash

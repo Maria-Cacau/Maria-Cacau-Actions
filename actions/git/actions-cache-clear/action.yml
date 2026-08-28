@@ -1,0 +1,16 @@
+name: actions-cache-clear
+description: >
+  Apaga uma entrada de cache do Actions por chave (silencioso se não existir). Requer a variável
+  de ambiente GH_TOKEN definida por quem chama esta action.
+
+inputs:
+  key:
+    description: Chave do cache a apagar
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Apagar cache
+      run: python "${{ github.action_path }}"/cache_clear.py "${{ inputs.key }}"
+      shell: bash

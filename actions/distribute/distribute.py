@@ -68,6 +68,8 @@ def main() -> None:
         "nuitka",
         "--onefile",
         "--assume-yes-for-downloads",
+        "--show-progress",
+        "--show-scons",
         "--enable-plugin=pyqt6",
         "--windows-console-mode=disable",
         f"--windows-icon-from-ico={module.__icon_win__}",

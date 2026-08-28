@@ -1,0 +1,26 @@
+name: distribute
+description: Gera o .exe (Windows, via Nuitka) a partir do módulo de entrada do repo, descoberto
+  automaticamente pelo pyproject.toml. Assume que o Python já foi configurado antes (via
+  actions/setup-python) por quem chama esta action, e que roda num runner Windows.
+
+inputs:
+  path:
+    description: Caminho raiz do repo (onde fica o pyproject.toml)
+    required: false
+    default: '.'
+
+outputs:
+  app-name:
+    description: Nome do app (de __app_name__ no módulo de entrada)
+    value: ${{ steps.run.outputs.app-name }}
+  exe-path:
+    description: Caminho do .exe gerado
+    value: ${{ steps.run.outputs.exe-path }}
+
+runs:
+  using: composite
+  steps:
+    - id: run
+      name: Gerar .exe
+      run: python ${{ github.action_path }}/distribute.py "${{ inputs.path }}"
+      shell: bash

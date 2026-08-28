@@ -1,0 +1,19 @@
+name: check-version
+description: Verifica se a versão em pyproject.toml mudou em relação ao commit anterior. Assume
+  checkout com histórico suficiente (fetch-depth >= 2) por quem chama esta action.
+
+outputs:
+  changed:
+    description: "'true' se a versão mudou"
+    value: ${{ steps.run.outputs.changed }}
+  version:
+    description: Versão atual (x.y.z)
+    value: ${{ steps.run.outputs.version }}
+
+runs:
+  using: composite
+  steps:
+    - id: run
+      name: Checar versão
+      run: python ${{ github.action_path }}/check_version.py
+      shell: bash

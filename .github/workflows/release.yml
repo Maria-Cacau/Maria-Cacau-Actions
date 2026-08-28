@@ -1,0 +1,64 @@
+# TODO: as 3 self-referências pra @feature/release-action abaixo (check-version,
+# distribute, release) voltam pra @v1 antes do merge na main.
+name: release
+
+on:
+  workflow_call: {}
+
+jobs:
+  check-version:
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.check.outputs.changed }}
+      version: ${{ steps.check.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 2
+
+      - id: check
+        uses: Maria-Cacau/Maria-Cacau-Actions/actions/check-version@feature/release-action
+
+  distribute:
+    needs: check-version
+    if: needs.check-version.outputs.changed == 'true'
+    runs-on: windows-latest
+    outputs:
+      exe-path: ${{ steps.dist.outputs.exe-path }}
+      app-name: ${{ steps.dist.outputs.app-name }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+
+      - id: dist
+        uses: Maria-Cacau/Maria-Cacau-Actions/actions/distribute@feature/release-action
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: exe
+          path: ${{ steps.dist.outputs.exe-path }}
+
+  release:
+    needs: [check-version, distribute]
+    if: needs.check-version.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: exe
+          path: dist
+
+      - uses: Maria-Cacau/Maria-Cacau-Actions/actions/release@feature/release-action
+        with:
+          version: ${{ needs.check-version.outputs.version }}
+          exe-path: dist/${{ needs.distribute.outputs.app-name }}.exe
+        env:
+          GH_TOKEN: ${{ github.token }}

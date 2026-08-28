@@ -1,12 +1,18 @@
-# TODO: as 4 self-referências pra @1.1-Test abaixo (check-version, build,
-# nuitka, release) voltam pra @v1 antes do merge na main.
+# TODO: as 5 self-referências pra @1.1-Test abaixo (check-branch, check-version,
+# build, nuitka, release) voltam pra @v1 antes do merge na main.
 name: release
 
 on:
-  workflow_call: {}
+  workflow_call:
+    inputs:
+      clear-cache:
+        description: "'true' pra limpar o cache do Nuitka antes de rodar (rebuild limpo)"
+        required: false
+        type: boolean
+        default: false
 
 jobs:
-  check-version:
+  validation:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -16,15 +22,21 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      - name: check-branch
+        uses: Maria-Cacau/Maria-Cacau-Actions/actions/check-branch@1.1-Test
+
       - id: check
+        name: check-version
         uses: Maria-Cacau/Maria-Cacau-Actions/actions/check-version@1.1-Test
         env:
           GH_TOKEN: ${{ github.token }}
 
-  distribute:
-    needs: check-version
-    if: needs.check-version.outputs.changed == 'true'
+  app-distribution:
+    needs: validation
+    if: needs.validation.outputs.changed == 'true'
     runs-on: windows-latest
+    permissions:
+      actions: write
     outputs:
       exe-path: ${{ steps.dist.outputs.exe-path }}
       app-name: ${{ steps.dist.outputs.app-name }}
@@ -34,6 +46,14 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: '3.13'
+
+      - name: Limpar cache do Nuitka (se solicitado)
+        if: inputs.clear-cache
+        uses: Maria-Cacau/Maria-Cacau-Actions/actions/clear-cache@1.1-Test
+        with:
+          key: nuitka-${{ runner.os }}-${{ hashFiles('**/pyproject.toml') }}
+        env:
+          GH_TOKEN: ${{ github.token }}
 
       # Cache do objeto compilado (clcache/Nuitka) entre runs — sem isso toda
       # run recompila do zero, já que o runner é uma VM nova sempre.
@@ -62,8 +82,8 @@ jobs:
           path: ${{ steps.dist.outputs.exe-path }}
 
   release:
-    needs: [check-version, distribute]
-    if: needs.check-version.outputs.changed == 'true'
+    needs: [validation, app-distribution]
+    if: needs.validation.outputs.changed == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -78,7 +98,7 @@ jobs:
 
       - uses: Maria-Cacau/Maria-Cacau-Actions/actions/release@1.1-Test
         with:
-          version: ${{ needs.check-version.outputs.version }}
-          exe-path: dist/${{ needs.distribute.outputs.app-name }}.exe
+          version: ${{ needs.validation.outputs.version }}
+          exe-path: dist/${{ needs.app-distribution.outputs.app-name }}.exe
         env:
           GH_TOKEN: ${{ github.token }}

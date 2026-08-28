@@ -1,0 +1,17 @@
+name: check-branch
+description: >
+  Valida que o workflow está rodando a partir da branch esperada — falha com annotation clara
+  se não estiver (ex: disparo manual numa branch que não a de release).
+
+inputs:
+  branch:
+    description: Branch esperada
+    required: false
+    default: 'main'
+
+runs:
+  using: composite
+  steps:
+    - name: Checar branch
+      run: python "${{ github.action_path }}"/check_branch.py "${{ inputs.branch }}"
+      shell: bash

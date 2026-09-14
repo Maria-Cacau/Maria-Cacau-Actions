@@ -74,6 +74,7 @@ def main() -> None:
         f"--copyright={module.__copyright__}",
         f"--include-data-dir={entry}/assets={entry}/assets",
         "--include-data-files=pyproject.toml=pyproject.toml",
+        "--include-package-data=tzdata",
         f"--output-filename={app_name}",
         f"--output-dir={output_dir}",
         entry,

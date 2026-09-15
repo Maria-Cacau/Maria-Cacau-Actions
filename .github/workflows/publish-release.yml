@@ -1,7 +1,14 @@
 name: publish-release
 
 on:
-  workflow_call: {}
+  workflow_call:
+    outputs:
+      changed:
+        description: "'true' se a versão mudou e a release foi publicada"
+        value: ${{ jobs.validation.outputs.changed }}
+      version:
+        description: Versão do pyproject.toml (x.y.z)
+        value: ${{ jobs.validation.outputs.version }}
 
 jobs:
   validation:

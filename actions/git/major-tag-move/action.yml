@@ -1,0 +1,17 @@
+name: major-tag-move
+description: >
+  Move a tag de major (ex.: versão 2.2.0 -> v2) para o commit atual (checkout já feito por quem
+  chama). A troca é feita num único push forçado, então a tag nunca deixa de existir no remoto.
+  Numa major nova (3.0.0), a v3 é criada do zero e a v2 fica na última 2.x.
+
+inputs:
+  version:
+    description: "Versão que acabou de ser publicada (ex.: 2.2.0)"
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Mover tag de major
+      run: python "${{ github.action_path }}"/major_tag_move.py "${{ inputs.version }}"
+      shell: bash

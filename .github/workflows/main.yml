@@ -12,3 +12,17 @@ permissions:
 jobs:
   publish-release:
     uses: ./.github/workflows/publish-release.yml
+
+  major-tag-move:
+    needs: publish-release
+    if: needs.publish-release.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: major-tag-move
+        uses: ./actions/git/major-tag-move
+        with:
+          version: ${{ needs.publish-release.outputs.version }}

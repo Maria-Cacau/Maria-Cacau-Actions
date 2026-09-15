@@ -1,0 +1,21 @@
+name: snapshot-version
+description: >
+  Monta a tag de um snapshot a partir da versão do pyproject.toml e do número da run
+  (ex.: 5.2.0.17-SNAPSHOT). Com quatro números e o sufixo, a tag nunca é confundida com uma release
+  pelo check-version, que só reconhece x.y.z.
+
+outputs:
+  version:
+    description: Versão do pyproject.toml (x.y.z)
+    value: ${{ steps.run.outputs.version }}
+  tag:
+    description: Tag do snapshot (x.y.z.<run_number>-SNAPSHOT)
+    value: ${{ steps.run.outputs.tag }}
+
+runs:
+  using: composite
+  steps:
+    - id: run
+      name: Montar tag do snapshot
+      run: python "${{ github.action_path }}"/snapshot_version.py
+      shell: bash

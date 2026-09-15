@@ -12,10 +12,14 @@ def release_exists(version: str) -> bool:
     return gh("release", "view", version, check=False).returncode == 0
 
 
-def create_release(version: str, *, draft: bool) -> None:
-    args = ["release", "create", version, "--title", f"v{version}", "--notes", ""]
+def create_release(version: str, *, draft: bool, prerelease: bool, target: str, notes: str) -> None:
+    args = ["release", "create", version, "--title", f"v{version}", "--notes", notes]
     if draft:
         args.append("--draft")
+    if prerelease:
+        args.append("--prerelease")
+    if target:
+        args += ["--target", target]
     gh(*args)
 
 
@@ -38,14 +42,19 @@ def main() -> None:
     version = sys.argv[1]
     asset_path = sys.argv[2] if len(sys.argv) > 2 else ""
     draft = sys.argv[3].lower() == "true" if len(sys.argv) > 3 else False
+    prerelease = os.environ.get("RELEASE_PRERELEASE", "").lower() == "true"
+    target = os.environ.get("RELEASE_TARGET", "")
+    notes = os.environ.get("RELEASE_NOTES", "")
 
     if release_exists(version):
         print(f"Release v{version} já existe, reaproveitando...")
     else:
-        print(f"Release v{version} não encontrada. Criando{' (draft)' if draft else ''}...")
-        create_release(version, draft=draft)
+        kind = " (draft)" if draft else " (pre-release)" if prerelease else ""
+        print(f"Release v{version} não encontrada. Criando{kind}...")
+        create_release(version, draft=draft, prerelease=prerelease, target=target, notes=notes)
 
-    if not current_notes(version).strip():
+    # Notes informadas são a descrição definitiva — o corpo do PR só entra quando ninguém definiu uma.
+    if not notes and not current_notes(version).strip():
         body = pr_body_for_current_commit()
         if body:
             gh("release", "edit", version, "--notes", body)

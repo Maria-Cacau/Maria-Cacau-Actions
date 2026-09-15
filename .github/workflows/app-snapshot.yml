@@ -1,4 +1,4 @@
-name: app-distribution
+name: app-snapshot
 
 on:
   workflow_call:
@@ -10,28 +10,21 @@ on:
         default: false
 
 jobs:
-  validation:
+  snapshot-version:
     runs-on: ubuntu-latest
     permissions:
       contents: read
     outputs:
-      changed: ${{ steps.check.outputs.changed }}
-      version: ${{ steps.check.outputs.version }}
+      tag: ${{ steps.snapshot.outputs.tag }}
     steps:
       - uses: actions/checkout@v7
 
-      - name: check-branch
-        uses: Maria-Cacau/Maria-Cacau-Actions/actions/git/branch-check@v2
+      - id: snapshot
+        name: snapshot-version
+        uses: Maria-Cacau/Maria-Cacau-Actions/actions/snapshot-version@v2
 
-      - id: check
-        name: check-version
-        uses: Maria-Cacau/Maria-Cacau-Actions/actions/check-version@v2
-        env:
-          GH_TOKEN: ${{ github.token }}
-
-  app-distribution:
-    needs: validation
-    if: needs.validation.outputs.changed == 'true'
+  app-build:
+    needs: snapshot-version
     runs-on: windows-latest
     permissions:
       actions: write
@@ -53,12 +46,10 @@ jobs:
           path: ${{ steps.build.outputs.exe-path }}
 
   release-publish:
-    needs: [validation, app-distribution]
-    if: needs.validation.outputs.changed == 'true'
+    needs: [snapshot-version, app-build]
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      pull-requests: read
     steps:
       - uses: actions/checkout@v7
 
@@ -67,16 +58,25 @@ jobs:
           name: exe
           path: dist
 
+      # Pre-release publicada (não draft) para quem for validar conseguir baixar. A tag nasce no
+      # commit que gerou o build, não na ponta da branch padrão.
       - uses: Maria-Cacau/Maria-Cacau-Actions/actions/git/release-publish@v2
         with:
-          version: ${{ needs.validation.outputs.version }}
-          asset-path: dist/${{ needs.app-distribution.outputs.app-name }}.exe
+          version: ${{ needs.snapshot-version.outputs.tag }}
+          asset-path: dist/${{ needs.app-build.outputs.app-name }}.exe
+          prerelease: 'true'
+          target: ${{ github.sha }}
+          notes: |
+            Snapshot de validação — não é uma release.
+
+            - Branch: `${{ github.ref_name }}`
+            - Commit: `${{ github.sha }}`
+            - Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         env:
           GH_TOKEN: ${{ github.token }}
 
-      - name: delete-test-tag
-        uses: Maria-Cacau/Maria-Cacau-Actions/actions/git/tag-delete@v2
+      - name: Summary
+        uses: Maria-Cacau/Maria-Cacau-Actions/actions/git/actions-notice@v2
         with:
-          version: ${{ needs.validation.outputs.version }}
-        env:
-          GH_TOKEN: ${{ github.token }}
+          title: Snapshot
+          message: "Pre-release ${{ needs.snapshot-version.outputs.tag }} publicada: ${{ github.server_url }}/${{ github.repository }}/releases/tag/${{ needs.snapshot-version.outputs.tag }}"

@@ -1,7 +1,7 @@
 name: release-publish
 description: >
-  Cria/reaproveita a release, preenche a descrição a partir do PR mergeado (se as notes ainda
-  estiverem vazias) e sobe o asset, se algum for informado. Requer a variável de ambiente
+  Cria/reaproveita a release, preenche a descrição (com as notes informadas ou, sem elas, a partir
+  do PR mergeado) e sobe o asset, se algum for informado. Requer a variável de ambiente
   GH_TOKEN definida por quem chama esta action.
 
 inputs:
@@ -13,9 +13,23 @@ inputs:
     required: false
     default: ''
   draft:
-    description: "'true' para criar como draft (ex: beta/pre-release) em vez de publicada direto"
+    description: "'true' para criar como draft em vez de publicada direto"
     required: false
     default: 'false'
+  prerelease:
+    description: "'true' para marcar como pre-release (ex.: snapshot de validação)"
+    required: false
+    default: 'false'
+  target:
+    description: >
+      Commit ou branch onde a tag é criada, se ainda não existir (vazio = branch padrão do repo).
+      Necessário quando a release não sai da branch padrão, senão a tag aponta pro commit errado.
+    required: false
+    default: ''
+  notes:
+    description: Descrição da release (vazio = corpo do PR mergeado do commit, se houver)
+    required: false
+    default: ''
 
 runs:
   using: composite
@@ -23,3 +37,7 @@ runs:
     - name: Criar/atualizar release
       run: python "${{ github.action_path }}"/release.py "${{ inputs.version }}" "${{ inputs.asset-path }}" "${{ inputs.draft }}"
       shell: bash
+      env:
+        RELEASE_PRERELEASE: ${{ inputs.prerelease }}
+        RELEASE_TARGET: ${{ inputs.target }}
+        RELEASE_NOTES: ${{ inputs.notes }}

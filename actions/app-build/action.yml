@@ -1,0 +1,60 @@
+name: app-build
+description: >
+  Gera o .exe do app num runner Windows: configura o Python, restaura o cache do Nuitka (limpando
+  antes, se pedido), instala o grupo de build do pyproject.toml e roda o Nuitka. Assume que o
+  checkout do repo já foi feito por quem chama esta action. Compartilhada por todo workflow que
+  gera o executável (release e snapshot), para o build ser sempre o mesmo.
+
+inputs:
+  clear-cache:
+    description: "'true' pra limpar o cache do Nuitka antes de rodar (rebuild limpo)"
+    required: false
+    default: 'false'
+  python-version:
+    description: Versão do Python usada no build
+    required: false
+    default: '3.13'
+
+outputs:
+  exe-path:
+    description: Caminho do .exe gerado
+    value: ${{ steps.dist.outputs.exe-path }}
+  app-name:
+    description: Nome do app (de __app_name__ no módulo de entrada)
+    value: ${{ steps.dist.outputs.app-name }}
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-python@v7
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Limpar cache do Nuitka (se solicitado)
+      if: inputs.clear-cache == 'true'
+      uses: Maria-Cacau/Maria-Cacau-Actions/actions/git/actions-cache-clear@v2
+      with:
+        key: nuitka-${{ runner.os }}-${{ hashFiles('**/pyproject.toml') }}
+      env:
+        GH_TOKEN: ${{ github.token }}
+
+    # Cache do objeto compilado (clcache/Nuitka) entre runs — sem isso toda
+    # run recompila do zero, já que o runner é uma VM nova sempre.
+    - uses: actions/cache@v6
+      with:
+        path: .nuitka-cache
+        key: nuitka-${{ runner.os }}-${{ hashFiles('**/pyproject.toml') }}
+        restore-keys: |
+          nuitka-${{ runner.os }}-
+
+    - id: build
+      name: build
+      uses: Maria-Cacau/Maria-Cacau-Actions/actions/build@v2
+      with:
+        args: build
+
+    - id: dist
+      name: nuitka
+      uses: Maria-Cacau/Maria-Cacau-Actions/actions/nuitka@v2
+      with:
+        python: ${{ steps.build.outputs.python }}

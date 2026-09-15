@@ -97,6 +97,10 @@ de produção — para esses, a validação acontece via
     <td>Valida versão/branch, gera o <code>.exe</code> via Nuitka e publica a release com o asset.</td>
   </tr>
   <tr>
+    <td><a href=".github/workflows/app-snapshot.yml">app-snapshot</a></td>
+    <td>Gera o <code>.exe</code> de qualquer branch e publica como pre-release <code>x.y.z.&lt;run&gt;-SNAPSHOT</code>, para validação antes da release.</td>
+  </tr>
+  <tr>
     <td><a href=".github/workflows/publish-release.yml">publish-release</a></td>
     <td>Valida versão/branch e publica a release — sem etapa de build, pra repos sem app distribuível.</td>
   </tr>
@@ -118,12 +122,20 @@ de produção — para esses, a validação acontece via
     <td>Roda o script de build do próprio repo consumidor (build.bat/build.sh) e expõe o Python resultante.</td>
   </tr>
   <tr>
+    <td><a href="actions/app-build/action.yml">app-build</a></td>
+    <td>Gera o <code>.exe</code> no Windows (Python, cache do Nuitka, build e Nuitka) — o mesmo build na release e no snapshot.</td>
+  </tr>
+  <tr>
     <td><a href="actions/nuitka/action.yml">nuitka</a></td>
     <td>Descobre o módulo de entrada, valida a metadata exigida e gera o <code>.exe</code> via Nuitka.</td>
   </tr>
   <tr>
     <td><a href="actions/check-version/action.yml">check-version</a></td>
     <td>Compara a versão do pyproject.toml contra a última release já publicada.</td>
+  </tr>
+  <tr>
+    <td><a href="actions/snapshot-version/action.yml">snapshot-version</a></td>
+    <td>Monta a tag do snapshot (<code>x.y.z.&lt;run_number&gt;-SNAPSHOT</code>) a partir do pyproject.toml.</td>
   </tr>
   <tr>
     <td><a href="actions/isort-fix/action.yml">isort-fix</a></td>
@@ -155,7 +167,7 @@ de produção — para esses, a validação acontece via
   </tr>
   <tr>
     <td><a href="actions/git/release-publish/action.yml">git/release-publish</a></td>
-    <td>Cria/reaproveita a release, preenche a descrição a partir do PR e sobe um asset opcional.</td>
+    <td>Cria/reaproveita a release (opcionalmente como pre-release, numa tag de outro commit), preenche a descrição e sobe um asset opcional.</td>
   </tr>
   <tr>
     <td><a href="actions/git/tag-create/action.yml">git/tag-create</a></td>

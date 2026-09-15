@@ -63,6 +63,10 @@ jobs:
 Repositório **trunk-based** — sem branch `develop`, tudo flui direto pra `main` via PR. Releases
 são marcadas por tag (`v1`, `v1.2.0`), nunca referenciadas por `@main` em produção.
 
+Subir a versão no `pyproject.toml` e fazer o merge na `main` dispara o `main.yml`: ele publica a
+release com a tag da versão exata e move a tag de major (`v2`) para o mesmo commit — é por ela que
+os repos consumidores referenciam as actions.
+
 ## Validação
 
 Workflows e actions podem ser testados localmente antes do push com
@@ -102,7 +106,7 @@ de produção — para esses, a validação acontece via
   </tr>
   <tr>
     <td><a href=".github/workflows/publish-release.yml">publish-release</a></td>
-    <td>Valida versão/branch e publica a release — sem etapa de build, pra repos sem app distribuível.</td>
+    <td>Valida versão/branch e publica a release — sem etapa de build, pra repos sem app distribuível. Expõe <code>changed</code> e <code>version</code> pra quem chama.</td>
   </tr>
   <tr>
     <td><a href=".github/workflows/pr-release.yml">pr-release</a></td>
@@ -176,6 +180,10 @@ de produção — para esses, a validação acontece via
   <tr>
     <td><a href="actions/git/tag-delete/action.yml">git/tag-delete</a></td>
     <td>Remove a tag de teste correspondente a uma versão publicada.</td>
+  </tr>
+  <tr>
+    <td><a href="actions/git/major-tag-move/action.yml">git/major-tag-move</a></td>
+    <td>Move a tag de major (<code>v2</code>) para o commit da versão publicada; numa major nova, cria a tag.</td>
   </tr>
   <tr>
     <td><a href="actions/git/actions-notice/action.yml">git/actions-notice</a></td>

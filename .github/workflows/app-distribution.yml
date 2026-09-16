@@ -67,10 +67,16 @@ jobs:
           name: exe
           path: dist
 
+      - id: zip
+        name: to-zip
+        uses: Maria-Cacau/Maria-Cacau-Actions/actions/to-zip@v2
+        with:
+          path: dist/${{ needs.app-distribution.outputs.app-name }}.exe
+
       - uses: Maria-Cacau/Maria-Cacau-Actions/actions/git/release-publish@v2
         with:
           version: ${{ needs.validation.outputs.version }}
-          asset-path: dist/${{ needs.app-distribution.outputs.app-name }}.exe
+          asset-path: ${{ steps.zip.outputs.zip-path }}
         env:
           GH_TOKEN: ${{ github.token }}
 

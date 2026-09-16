@@ -58,12 +58,18 @@ jobs:
           name: exe
           path: dist
 
+      - id: zip
+        name: to-zip
+        uses: Maria-Cacau/Maria-Cacau-Actions/actions/to-zip@v2
+        with:
+          path: dist/${{ needs.app-build.outputs.app-name }}.exe
+
       # Pre-release publicada (não draft) para quem for validar conseguir baixar. A tag nasce no
       # commit que gerou o build, não na ponta da branch padrão.
       - uses: Maria-Cacau/Maria-Cacau-Actions/actions/git/release-publish@v2
         with:
           version: ${{ needs.snapshot-version.outputs.tag }}
-          asset-path: dist/${{ needs.app-build.outputs.app-name }}.exe
+          asset-path: ${{ steps.zip.outputs.zip-path }}
           prerelease: 'true'
           target: ${{ github.sha }}
           notes: |

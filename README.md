@@ -142,6 +142,10 @@ de produção — para esses, a validação acontece via
     <td>Monta a tag do snapshot (<code>x.y.z.&lt;run_number&gt;-SNAPSHOT</code>) a partir do pyproject.toml.</td>
   </tr>
   <tr>
+    <td><a href="actions/to-zip/action.yml">to-zip</a></td>
+    <td>Compacta um arquivo num <code>.zip</code> — usado no asset da release, que o navegador barra se for <code>.exe</code>.</td>
+  </tr>
+  <tr>
     <td><a href="actions/isort-fix/action.yml">isort-fix</a></td>
     <td>Ajusta a ordenação dos imports Python com isort.</td>
   </tr>

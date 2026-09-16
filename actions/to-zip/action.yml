@@ -1,0 +1,23 @@
+name: to-zip
+description: >
+  Compacta um arquivo num .zip ao lado dele, mantendo o nome. Usado antes de anexar o executável
+  numa release: o navegador barra o download de um .exe com pouca reputação, e dentro de um .zip
+  o download passa.
+
+inputs:
+  path:
+    description: Caminho do arquivo a compactar
+    required: true
+
+outputs:
+  zip-path:
+    description: Caminho do .zip gerado
+    value: ${{ steps.run.outputs.zip-path }}
+
+runs:
+  using: composite
+  steps:
+    - id: run
+      name: Compactar arquivo
+      run: python "${{ github.action_path }}"/to_zip.py "${{ inputs.path }}"
+      shell: bash
